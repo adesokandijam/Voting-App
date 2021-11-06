@@ -1,0 +1,12 @@
+{% extends 'base.html'%}
+
+{%block title%}
+Dijam Voting App
+{%endblock%}
+
+{%block content%}
+<h1 class="display-4 font-weight-normal">Welcome to Dijam Voting App</h1>
+<br>
+<h2 class="display-4 font-weight-normal">Click here to start Voting</h2>
+<a class="btn btn-primary" href="{{ url_for('voting_page') }}">Get Started</a>
+{%endblock%}

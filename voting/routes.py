@@ -1,0 +1,90 @@
+from operator import pos
+from types import TracebackType
+from flask.helpers import flash
+from flask_login import login_required, login_user, current_user
+from flask_login.mixins import UserMixin
+from flask_login.utils import logout_user
+from werkzeug.wrappers import request
+from wtforms.fields.simple import SubmitField
+from voting import db
+from voting.models import Position, User,Candidate
+from voting.forms import AGSForm, GiantForm, PresidentForm, RegisterForm, LoginForm, CandidateForm, SecretaryForm, SportsDirectorForm, TreasurerForm, VicePresidentForm
+from voting import app
+from flask import render_template, url_for, redirect, request
+
+@app.route('/')
+@app.route('/home')
+def home_page():
+    return render_template('home.html')
+    
+
+@app.route('/register',methods=['GET','POST'])
+def register_page():
+    form = RegisterForm()
+    if form.validate_on_submit():
+        user = User(name=form.username.data,email_address=form.email_address.data,department=form.department.data,password=form.password1.data)
+        db.session.add(user)
+        db.session.commit()
+        return redirect(url_for('home_page'))
+    return render_template('register.html', form = form)
+
+
+@app.route('/login', methods=['GET','POST'])
+def login_page():
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(email_address = form.email_address.data).first()
+        if user and user.verify_password(form.password.data):
+            login_user(user)
+            return redirect(url_for('voting_page'))
+        else:
+            print("Lol Bugs")
+            print(user)
+
+    if form.errors != {}:  # If there are not errors from the validations
+        for err_msg in form.errors.values():
+            flash(f'There was an error with creating a user: {err_msg}', category='danger')
+            print(err_msg)
+    return render_template('login.html', form = form)
+
+
+@app.route('/voting', methods = ['POST',"GET"])
+@login_required
+def voting_page():
+    all = GiantForm()
+    if not current_user.has_user_voted(): 
+        if all.validate_on_submit():
+            c1 = Candidate.query.filter_by(name = all.president.example.data).first()
+            c1.vote()
+            c1 = Candidate.query.filter_by(name = all.vice_president.example.data).first()
+            c1.vote()
+            c1 = Candidate.query.filter_by(name = all.secretary.example.data).first()
+            c1.vote()
+            c1 = Candidate.query.filter_by(name = all.ags.example.data).first()
+            c1.vote()
+            c1 = Candidate.query.filter_by(name = all.treasurer.example.data).first()
+            c1.vote()
+            c1 = Candidate.query.filter_by(name = all.sports_director.example.data).first()
+            c1.vote()
+            current_user.vote_check()
+            return redirect(url_for('home_page'))
+    else:
+        return "You have already voted bitch"
+    
+    return render_template('vote.html', all = all)
+
+@app.route('/logout')
+def logout_page():
+    logout_user()
+    flash("You have been logged out")
+    return redirect(url_for('home_page'))
+
+
+@app.route('/addcandidate', methods=['POST','GET'])
+def add_candidate():
+    form = CandidateForm()
+    if form.validate_on_submit():
+        candidate = Candidate(name = form.name.data, department = form.department.data, position = form.position.data)
+        db.session.add(candidate)
+        db.session.commit()
+    return render_template('add.html',form = form)

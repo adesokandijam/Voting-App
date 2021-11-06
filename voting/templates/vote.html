@@ -1,0 +1,42 @@
+{% extends 'base.html'%}
+
+{%block title%}
+Dijam Voting App
+{%endblock%}
+
+{%block content%}
+
+<form method="post">
+    
+    {{all.hidden_tag()}}
+    {{all.president.hidden_tag()}}
+    {{all.president.label}}
+    {{all.president.example(class="form-control", placeholder="Select the position contested")}}
+    <br>
+    {{all.vice_president.hidden_tag()}}
+    {{all.vice_president.label}}
+    {{all.vice_president.example(class="form-control", placeholder="Select the position contested")}}
+    <br>
+    {{all.secretary.hidden_tag()}}
+    {{all.secretary.label}}
+    {{all.secretary.example(class="form-control", placeholder="Select the position contested")}}
+    <br>
+    {{all.treasurer.hidden_tag()}}
+    {{all.treasurer.label}}
+    {{all.treasurer.example(class="form-control", placeholder="Select the position contested")}}
+    <br>
+    {{all.ags.hidden_tag()}}
+    {{all.ags.label}}
+    {{all.ags.example(class="form-control", placeholder="Select the position contested")}}
+    <br>
+    {{all.sports_director.hidden_tag()}}
+    {{all.sports_director.label}}
+    {{all.sports_director.example(class="form-control", placeholder="Select the position contested")}}
+    <br>
+    {{all.submit}}
+
+</form> 
+
+
+{%endblock%}
+
