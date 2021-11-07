@@ -27,6 +27,9 @@ def register_page():
         db.session.commit()
         login_user(user)
         return redirect(url_for('home_page'))
+    if form.errors != {}:  # If there are not errors from the validations
+        for err_msg in form.errors.values():
+            flash(f'There was an error with creating a user: {err_msg}', category='danger')
     return render_template('register.html', form = form)
 
 
@@ -39,11 +42,8 @@ def login_page():
             login_user(user)
             return redirect(url_for('voting_page'))
 
-    if form.errors != {}:  # If there are not errors from the validations
-        for err_msg in form.errors.values():
-            flash(f'There was an error with creating a user: {err_msg}', category='danger')
-            print(err_msg)
-            return redirect(url_for('home_page'))
+        else:
+            flash('Username and password are not match! Please try again', category='danger')
     return render_template('login.html', form = form)
 
 

@@ -12,7 +12,7 @@ def load_user(user_id):
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer(), primary_key=True)
-    name = db.Column(db.String(length = 40), unique=True,nullable=False)
+    name = db.Column(db.String(length = 40),nullable=False)
     department = db.Column(db.String(length = 40),nullable=False)
     email_address = db.Column(db.String(length = 40), unique=True, nullable=False)
     password_hash = db.Column(db.String(),nullable=False)
