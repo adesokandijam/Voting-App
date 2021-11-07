@@ -17,6 +17,7 @@ class User(db.Model, UserMixin):
     email_address = db.Column(db.String(length = 40), unique=True, nullable=False)
     password_hash = db.Column(db.String(),nullable=False)
     hasVoted = db.Column(db.Boolean(),default = False)
+    isAdmin = db.Column(db.Boolean, default =False)
 
     @property
     def password(self):
@@ -35,6 +36,10 @@ class User(db.Model, UserMixin):
 
     def has_user_voted(self):
         return self.hasVoted
+
+
+    def is_user_admin(self):
+        return self.isAdmin
 
 
 class Candidate(db.Model):

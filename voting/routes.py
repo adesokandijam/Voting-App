@@ -25,6 +25,7 @@ def register_page():
         user = User(name=form.username.data,email_address=form.email_address.data,department=form.department.data,password=form.password1.data)
         db.session.add(user)
         db.session.commit()
+        login_user(user)
         return redirect(url_for('home_page'))
     return render_template('register.html', form = form)
 
@@ -37,14 +38,12 @@ def login_page():
         if user and user.verify_password(form.password.data):
             login_user(user)
             return redirect(url_for('voting_page'))
-        else:
-            print("Lol Bugs")
-            print(user)
 
     if form.errors != {}:  # If there are not errors from the validations
         for err_msg in form.errors.values():
             flash(f'There was an error with creating a user: {err_msg}', category='danger')
             print(err_msg)
+            return redirect(url_for('home_page'))
     return render_template('login.html', form = form)
 
 
@@ -69,7 +68,10 @@ def voting_page():
             current_user.vote_check()
             return redirect(url_for('home_page'))
     else:
-        return "You have already voted bitch"
+        logout_user()
+        flash(f'You have already voted', category='danger')
+        return redirect(url_for('home_page'))
+        
     
     return render_template('vote.html', all = all)
 
@@ -81,10 +83,19 @@ def logout_page():
 
 
 @app.route('/addcandidate', methods=['POST','GET'])
+@login_required
 def add_candidate():
     form = CandidateForm()
-    if form.validate_on_submit():
-        candidate = Candidate(name = form.name.data, department = form.department.data, position = form.position.data)
-        db.session.add(candidate)
-        db.session.commit()
+    if current_user.is_user_admin():
+        if form.validate_on_submit():
+            candidate = Candidate(name = form.name.data, department = form.department.data, position = form.position.data)
+            db.session.add(candidate)
+            db.session.commit()
+    else:
+        return "You are not allowed to add candidates for this election"
     return render_template('add.html',form = form)
+
+@app.route('/results')
+def check_result():
+    candidate = Candidate.query.order_by(Candidate.position).all()
+    return render_template('check_result.html', candidate = candidate)

@@ -1,0 +1,31 @@
+
+
+{% extends 'base.html' %}
+{% block title %}
+Result Page
+{% endblock %}
+{% block content %}
+<table class="table table-hover table-dark">
+    <thead>
+       <tr>
+          <!-- Your Columns HERE -->
+          <th scope="col">Name</th>
+          <th scope="col">Position</th>
+          <th scope="col">Department</th>
+          <th scope="col">Number of Votes</th>
+       </tr>
+    </thead>
+    <tbody>
+       <!-- Your rows inside the table HERE: -->
+       {% for item in candidate %}
+       <tr>
+          
+          <td>{{ item.name }}</td>
+          <td>{{ item.position }}</td>
+          <td>{{ item.department}}</td>
+          <td>{{ item.number_of_votes }}</td>
+       </tr>
+       {% endfor %}
+    </tbody>
+ </table>
+ {% endblock %}
