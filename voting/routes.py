@@ -51,6 +51,7 @@ def login_page():
 @login_required
 def voting_page():
     all = GiantForm()
+    
     if not current_user.has_user_voted(): 
         if all.validate_on_submit():
             c1 = Candidate.query.filter_by(name = all.president.example.data).first()
@@ -66,12 +67,12 @@ def voting_page():
             c1 = Candidate.query.filter_by(name = all.sports_director.example.data).first()
             c1.vote()
             current_user.vote_check()
+            flash(f'You have successfully voted in this election. Thank you very much', category='success')
             return redirect(url_for('home_page'))
     else:
         logout_user()
         flash(f'You have already voted', category='danger')
-        return redirect(url_for('home_page'))
-        
+        return redirect(url_for('home_page'))  
     
     return render_template('vote.html', all = all)
 
@@ -91,8 +92,16 @@ def add_candidate():
             candidate = Candidate(name = form.name.data, department = form.department.data, position = form.position.data)
             db.session.add(candidate)
             db.session.commit()
+            flash(f'You have successfully added {candidate.name} as a candidate for this election',category='success')
+        if form.errors != {}:
+            for err_msg in form.errors.values():
+                flash(f'There was an error with adding this candidate: {err_msg}', category='danger')
     else:
         return "You are not allowed to add candidates for this election"
+    if form.errors != {}:
+        for err_msg in form.errors.values():
+            flash(f'There was an error with adding this candidate: {err_msg}', category='danger')
+
     return render_template('add.html',form = form)
 
 @app.route('/results')

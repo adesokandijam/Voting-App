@@ -2,7 +2,6 @@ from operator import pos
 from flask.app import Flask
 from flask_wtf import FlaskForm, validators
 from wtforms import StringField, SubmitField, PasswordField, RadioField
-import wtforms
 from wtforms.fields.core import FormField, Label, SelectField
 from wtforms.fields.simple import TextField
 from wtforms.validators import DataRequired, EqualTo, ValidationError
@@ -27,7 +26,7 @@ class LoginForm(FlaskForm):
     submit = SubmitField(label="Log In")
 
 class PresidentForm(FlaskForm):
-    example = SelectField(label = "President", choices=Candidate.query.filter_by(position = "President").all())
+    example = SelectField(label = "President", choices= Candidate.query.filter_by(position="President").all())
 
 class VicePresidentForm(FlaskForm):
     example = SelectField(label = "Vice President", choices=Candidate.query.filter_by(position = "Vice President").all())
@@ -42,7 +41,7 @@ class TreasurerForm(FlaskForm):
 
 
 class AGSForm(FlaskForm):
-    example = SelectField(label = "Assistant General Secratary", choices=Candidate.query.filter_by(position = "AGS").all())
+    example = SelectField(label = "Assistant General Secretary", choices=Candidate.query.filter_by(position = "AGS").all())
 
 
 class SportsDirectorForm(FlaskForm):
@@ -55,6 +54,10 @@ class CandidateForm(FlaskForm):
     department = StringField(label="Department", validators=[DataRequired()])
     position = SelectField(label="Select Position", choices=Position.query.all())
     submit = SubmitField(label="Submit")
+    def validate_name(self, name):
+        email = Candidate.query.filter_by(name=name.data).first()
+        if email:
+            raise ValidationError('Try a different name!')
 
 class GiantForm(FlaskForm):
     president = FormField(PresidentForm)
@@ -64,5 +67,8 @@ class GiantForm(FlaskForm):
     treasurer = FormField(TreasurerForm)
     sports_director = FormField(SportsDirectorForm)
     submit = SubmitField(label="Submit")
+
+
+
 
 
